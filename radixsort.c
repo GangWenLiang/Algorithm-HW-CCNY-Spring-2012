@@ -3,6 +3,10 @@
 
 struct listnode { struct listnode * next;
                   unsigned long              value; } ;
+
+int power(unsigned long b,unsigned long p);
+struct listnode *radixsort(struct listnode *data,int a, int k);
+
 int main(void)
 {  
    unsigned long i; 
@@ -41,4 +45,48 @@ int main(void)
    }
    printf("Sort successful\n");
    exit(0);
+}
+
+//Solution radixsort
+
+//exponent function
+int power(unsigned long b,unsigned long p)
+{  
+   if(p==0)
+      return 1;
+   else if(p<=1)
+      return b;
+   else return
+      b*(power(b,p-1));
+}
+ 
+struct listnode *radixsort(struct listnode *data,int a, int k)
+{  struct listnode *temp, *holder,*bucket=(struct listnode *) malloc( a*sizeof(struct listnode));//created buckets
+   int i,tempk;
+   for(i=0;i<a;i++) //set all buckets to NULL pointer
+      (bucket+i)->next=NULL;
+   for(tempk=0;tempk<=k;tempk++)
+   {  temp=data;
+      while(temp!=NULL)
+      {  holder=temp;
+         temp=temp->next;
+         holder->next=(bucket+(holder->value%power(a,tempk+1)/power(a,tempk)))->next;//insert front of bucket
+         (bucket+(holder->value%power(a,tempk+1)/power(a,tempk)))->next=holder;
+      }
+      data=0;
+      for(i=a-1;i>=0;i--)
+      {  if((bucket+i)->next!=NULL)//insert front of data but start with last bucket
+         {  temp=(bucket+i)->next;
+            while(temp!=NULL)
+            {  holder=temp;
+               temp=temp->next;
+               holder->next=data;
+               data=holder;  
+            }  
+         }  
+      }
+      for(i=0;i<a;i++)
+         (bucket+i)->next=NULL;//clear the buckets;
+   }
+   return data;
 }
